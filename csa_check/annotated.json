@@ -1,136 +1,47 @@
 {
-  "title": "Possible influence operation around news-voice.example (planted-flaw demo)",
+  "title": "What is known about maltego.com's web presence?",
   "records": {
     "r1": {
-      "source": "whois",
-      "text": "Domain news-voice.example registered 2026-09-02 via registrar NameCo. Registrant privacy enabled."
-    },
-    "r2": {
-      "source": "telegram",
-      "text": "Channel @newsvoice posted 14 comments between 03:00 and 03:04 UTC on 2026-09-11, all containing the link news-voice.example/a1."
-    },
-    "r3": {
-      "source": "telegram",
-      "text": "Accounts u771, u772 and u773 each replied under three channels within one minute of each other, using identical wording."
-    },
-    "r4": {
-      "source": "urlscan",
-      "text": "news-voice.example/a1 redirects to a page that republishes material from a known state outlet."
+      "source": "maltego:To Website [Quick lookup]",
+      "locator": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a#716fdd432dc5",
+      "run_id": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a",
+      "text": "Maltego result of [To Website [Quick lookup]] on maltego.Domain maltego.com: maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])",
+      "hash": "sha256:625ca32196023bb3c06c946b7385685df67745d8d6fbc1f2f8c4c11c2f442ca6"
     }
   },
   "steps": [
     {
       "id": "s1",
       "kind": "observation",
-      "text": "The domain was registered 9 days before the posting burst",
+      "text": "A Maltego 'To Website [Quick lookup]' transform on the domain maltego.com returned a Website entity with FQDN www.maltego.com on port 80.",
       "cites": [
         {
           "record": "r1",
-          "quote": "registered 2026-09-02"
-        },
-        {
-          "record": "r2",
-          "quote": "2026-09-11"
+          "quote": "maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])"
         }
       ],
+      "depends_on": [],
       "cite_checks": [
         {
           "record": "r1",
-          "quote": "registered 2026-09-02",
-          "ok": true,
-          "why": "quote found verbatim"
-        },
-        {
-          "record": "r2",
-          "quote": "2026-09-11",
+          "quote": "maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])",
           "ok": true,
           "why": "quote found verbatim"
         }
       ],
+      "llm": {
+        "verdict": "supported",
+        "reason": "The evidence explicitly shows the 'To Website [Quick lookup]' transform on maltego.com returning a maltego.Website entity with fqdn='www.maltego.com' and ports=[80], which directly matches every element of the statement."
+      },
       "status": "pass",
       "problems": []
     },
     {
       "id": "s2",
-      "kind": "observation",
-      "text": "Three accounts posted identical wording within a minute across three channels",
-      "cites": [
-        {
-          "record": "r3",
-          "quote": "identical wording"
-        }
-      ],
-      "cite_checks": [
-        {
-          "record": "r3",
-          "quote": "identical wording",
-          "ok": true,
-          "why": "quote found verbatim"
-        }
-      ],
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "id": "s3",
-      "kind": "observation",
-      "text": "The linked page republishes state-outlet material",
-      "cites": [
-        {
-          "record": "r4",
-          "quote": "republishes material from a known state outlet"
-        }
-      ],
-      "cite_checks": [
-        {
-          "record": "r4",
-          "quote": "republishes material from a known state outlet",
-          "ok": true,
-          "why": "quote found verbatim"
-        }
-      ],
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "id": "s4",
-      "kind": "inference",
-      "text": "The accounts are coordinated",
-      "depends_on": [
-        "s2"
-      ],
-      "cites": [
-        {
-          "record": "r3",
-          "quote": "within one minute of each other"
-        }
-      ],
-      "cite_checks": [
-        {
-          "record": "r3",
-          "quote": "within one minute of each other",
-          "ok": true,
-          "why": "quote found verbatim"
-        }
-      ],
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "id": "s5",
-      "kind": "inference",
-      "text": "The domain was created for this campaign",
-      "depends_on": [
-        "s1"
-      ],
-      "cite_checks": [],
-      "status": "pass",
-      "problems": []
-    },
-    {
-      "id": "s6",
       "kind": "assumption",
-      "text": "Coordinated sharing of a state-linked site means Kremlin direction",
+      "text": "Port 80 conventionally indicates an HTTP (unencrypted) web service; the record itself does not state this.",
+      "cites": [],
+      "depends_on": [],
       "cite_checks": [],
       "status": "assumed",
       "problems": [
@@ -138,104 +49,80 @@
       ]
     },
     {
-      "id": "s7",
-      "kind": "observation",
-      "text": "The operator confessed in a leaked chat",
-      "cites": [
-        {
-          "record": "r2",
-          "quote": "we are paid by the ministry"
-        }
+      "id": "s3",
+      "kind": "inference",
+      "text": "maltego.com has a web presence at www.maltego.com, likely serving plain HTTP on port 80.",
+      "cites": [],
+      "depends_on": [
+        "s1",
+        "s2"
       ],
-      "cite_checks": [
-        {
-          "record": "r2",
-          "quote": "we are paid by the ministry",
-          "ok": false,
-          "why": "quoted text not found in record"
-        }
-      ],
-      "status": "fail",
+      "cite_checks": [],
+      "llm": {
+        "verdict": "partial",
+        "reason": "The transform result directly supports a web presence at www.maltego.com on port 80, but the 'plain HTTP' characterization rests on the port 80 convention rather than anything stated in the record, requiring an extra assumption."
+      },
+      "status": "weak",
       "problems": [
-        "quoted text not found in record"
+        "weak: The transform result directly supports a web presence at www.maltego.com on port 80, but the 'plain HTTP' characterization rests on the port 80 convention rather than anything stated in the record, requiring an extra assumption."
       ]
     }
   ],
   "claims": [
     {
       "id": "c1",
-      "text": "A coordinated account group is amplifying news-voice.example",
+      "text": "maltego.com resolves to a website with FQDN www.maltego.com, listening on port 80.",
       "stated_confidence": "high",
       "supported_by": [
-        "s4",
-        "s2",
-        "s3"
-      ],
-      "status": "solid",
-      "independent_sources": 2,
-      "steps_in_chain": [
-        "s2",
-        "s3",
-        "s4"
-      ],
-      "reasons": [],
-      "overconfident": false
-    },
-    {
-      "id": "c2",
-      "text": "The domain was purpose-built for the campaign",
-      "stated_confidence": "high",
-      "supported_by": [
-        "s5"
-      ],
-      "status": "solid",
-      "independent_sources": 2,
-      "steps_in_chain": [
-        "s1",
-        "s5"
-      ],
-      "reasons": [],
-      "overconfident": false
-    },
-    {
-      "id": "c3",
-      "text": "The operation is directed by the Kremlin",
-      "stated_confidence": "high",
-      "supported_by": [
-        "s4",
-        "s3",
-        "s6"
+        "s1"
       ],
       "status": "shaky",
-      "independent_sources": 2,
+      "independent_sources": 1,
       "steps_in_chain": [
-        "s2",
-        "s3",
-        "s4",
-        "s6"
+        "s1"
       ],
       "reasons": [
-        "rests on assumption/weak step(s): s6"
+        "only 1 independent source(s)"
       ],
       "overconfident": true
     },
     {
-      "id": "c4",
-      "text": "An operator admitted payment by a ministry",
+      "id": "c2",
+      "text": "The site appears to serve HTTP (unencrypted) traffic on port 80.",
       "stated_confidence": "medium",
       "supported_by": [
-        "s7"
+        "s2",
+        "s3"
       ],
-      "status": "broken",
+      "status": "shaky",
       "independent_sources": 1,
       "steps_in_chain": [
-        "s7"
+        "s1",
+        "s2",
+        "s3"
       ],
       "reasons": [
-        "broken link(s): s7",
+        "rests on assumption/weak step(s): s2, s3",
         "only 1 independent source(s)"
       ],
       "overconfident": false
+    },
+    {
+      "id": "c3",
+      "text": "No other web properties (e.g., HTTPS on 443, additional subdomains) are evidenced in the available records.",
+      "stated_confidence": "high",
+      "supported_by": [
+        "s1"
+      ],
+      "status": "shaky",
+      "independent_sources": 1,
+      "steps_in_chain": [
+        "s1"
+      ],
+      "reasons": [
+        "only 1 independent source(s)"
+      ],
+      "overconfident": true
     }
   ]
 }

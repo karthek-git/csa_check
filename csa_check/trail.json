@@ -1,0 +1,70 @@
+{
+  "title": "What is known about maltego.com's web presence?",
+  "records": {
+    "r1": {
+      "source": "maltego:To Website [Quick lookup]",
+      "locator": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a#716fdd432dc5",
+      "run_id": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a",
+      "text": "Maltego result of [To Website [Quick lookup]] on maltego.Domain maltego.com: maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])",
+      "hash": "sha256:625ca32196023bb3c06c946b7385685df67745d8d6fbc1f2f8c4c11c2f442ca6"
+    }
+  },
+  "steps": [
+    {
+      "id": "s1",
+      "kind": "observation",
+      "text": "A Maltego 'To Website [Quick lookup]' transform on the domain maltego.com returned a Website entity with FQDN www.maltego.com on port 80.",
+      "cites": [
+        {
+          "record": "r1",
+          "quote": "maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])"
+        }
+      ],
+      "depends_on": []
+    },
+    {
+      "id": "s2",
+      "kind": "assumption",
+      "text": "Port 80 conventionally indicates an HTTP (unencrypted) web service; the record itself does not state this.",
+      "cites": [],
+      "depends_on": []
+    },
+    {
+      "id": "s3",
+      "kind": "inference",
+      "text": "maltego.com has a web presence at www.maltego.com, likely serving plain HTTP on port 80.",
+      "cites": [],
+      "depends_on": [
+        "s1",
+        "s2"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c1",
+      "text": "maltego.com resolves to a website with FQDN www.maltego.com, listening on port 80.",
+      "stated_confidence": "high",
+      "supported_by": [
+        "s1"
+      ]
+    },
+    {
+      "id": "c2",
+      "text": "The site appears to serve HTTP (unencrypted) traffic on port 80.",
+      "stated_confidence": "medium",
+      "supported_by": [
+        "s2",
+        "s3"
+      ]
+    },
+    {
+      "id": "c3",
+      "text": "No other web properties (e.g., HTTPS on 443, additional subdomains) are evidenced in the available records.",
+      "stated_confidence": "high",
+      "supported_by": [
+        "s1"
+      ]
+    }
+  ]
+}

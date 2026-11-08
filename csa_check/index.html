@@ -3,121 +3,840 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>csa_check</title>
+<title>CSA Check</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
-<style> mark { background: #ffe66d; color: #000; padding: 0 2px; border-radius: 2px; } </style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/dark.css">
+<link rel="stylesheet" href="https://unpkg.com/reactflow@11.11.4/dist/style.css">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace-autoloader.js"></script>
+<script>
+  /* Shoelace's dark tokens apply under .sl-theme-dark: follow the system scheme like the M3 tokens do */
+  (function () { var mq = matchMedia("(prefers-color-scheme: dark)");
+    var set = function () { document.documentElement.classList.toggle("sl-theme-dark", mq.matches); };
+    set(); mq.addEventListener("change", set); })();
+</script>
+<style>
+  /* ---- Material 3 design tokens (baseline tonal scheme) ---- */
+  :root {
+    color-scheme: light dark;
+    --md-sys-color-primary:#005BC0; --md-sys-color-on-primary:#FFFFFF;
+    --md-sys-color-primary-container:#D8E2FF; --md-sys-color-on-primary-container:#001A41;
+    --md-sys-color-secondary:#565E71; --md-sys-color-on-secondary:#FFFFFF;
+    --md-sys-color-secondary-container:#DBE2F9; --md-sys-color-on-secondary-container:#131B2C;
+    --md-sys-color-tertiary:#715574; --md-sys-color-on-tertiary:#FFFFFF;
+    --md-sys-color-tertiary-container:#FBD7FC; --md-sys-color-on-tertiary-container:#29132D;
+    --md-sys-color-error:#BA1A1A; --md-sys-color-on-error:#FFFFFF;
+    --md-sys-color-error-container:#FFDAD6; --md-sys-color-on-error-container:#410002;
+    --md-sys-color-background:#FEFBFF; --md-sys-color-on-background:#1B1B1F;
+    --md-sys-color-surface:#FEFBFF; --md-sys-color-on-surface:#1B1B1F;
+    --md-sys-color-surface-variant:#E1E2EC; --md-sys-color-on-surface-variant:#44474F;
+    --md-sys-color-outline:#74777F; --md-sys-color-outline-variant:#C4C6D0;
+    --md-sys-color-surface-container-lowest:#FFFFFF; --md-sys-color-surface-container-low:#F5F3F7;
+    --md-sys-color-surface-container:#EFEDF1; --md-sys-color-surface-container-high:#E9E7EC;
+    --md-sys-color-surface-container-highest:#E3E2E6;
+    --md-sys-color-inverse-surface:#303033; --md-sys-color-inverse-on-surface:#F2F0F4;
+    --md-sys-color-shadow:#000; --md-sys-color-scrim:#000;
+    /* custom colour roles (M3 "extended colours"): success + warning */
+    --cc-success:#006C49; --cc-on-success:#FFFFFF; --cc-success-container:#8AF8C2; --cc-on-success-container:#002113;
+    --cc-warning:#8D4F00; --cc-on-warning:#FFFFFF; --cc-warning-container:#FFDCC0; --cc-on-warning-container:#2D1600;
+    /* shape scale */
+    --shape-xs:4px; --shape-sm:8px; --shape-md:12px; --shape-lg:16px; --shape-xl:28px;
+    --md-ref-typeface-plain:Roboto, system-ui, sans-serif; --md-ref-typeface-brand:Roboto, system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --md-sys-color-primary:#ADC7FF; --md-sys-color-on-primary:#002E68;
+    --md-sys-color-primary-container:#004493; --md-sys-color-on-primary-container:#D8E2FF;
+    --md-sys-color-secondary:#BFC6DC; --md-sys-color-on-secondary:#283041;
+    --md-sys-color-secondary-container:#3F4759; --md-sys-color-on-secondary-container:#DBE2F9;
+    --md-sys-color-tertiary:#DEBCDF; --md-sys-color-on-tertiary:#402843;
+    --md-sys-color-tertiary-container:#583E5B; --md-sys-color-on-tertiary-container:#FBD7FC;
+    --md-sys-color-error:#FFB4AB; --md-sys-color-on-error:#690005;
+    --md-sys-color-error-container:#93000A; --md-sys-color-on-error-container:#FFB4AB;
+    --md-sys-color-background:#1B1B1F; --md-sys-color-on-background:#E3E2E6;
+    --md-sys-color-surface:#1B1B1F; --md-sys-color-on-surface:#E3E2E6;
+    --md-sys-color-surface-variant:#44474F; --md-sys-color-on-surface-variant:#C4C6D0;
+    --md-sys-color-outline:#8E9099; --md-sys-color-outline-variant:#44474F;
+    --md-sys-color-surface-container-lowest:#0D0E11; --md-sys-color-surface-container-low:#1B1B1F;
+    --md-sys-color-surface-container:#1F1F23; --md-sys-color-surface-container-high:#292A2D;
+    --md-sys-color-surface-container-highest:#343538;
+    --md-sys-color-inverse-surface:#E3E2E6; --md-sys-color-inverse-on-surface:#303033;
+    --cc-success:#6DDBA7; --cc-on-success:#003824; --cc-success-container:#005236; --cc-on-success-container:#8AF8C2;
+    --cc-warning:#FFB875; --cc-on-warning:#4B2800; --cc-warning-container:#6B3B00; --cc-on-warning-container:#FFDCC0;
+  } }
+  /* ---- M3 type scale ---- */
+  .display-large{font:400 57px/64px Roboto;letter-spacing:-.25px} .headline-small{font:400 24px/32px Roboto}
+  .title-large{font:400 22px/28px Roboto} .title-medium{font:500 16px/24px Roboto;letter-spacing:.15px}
+  .title-small{font:500 14px/20px Roboto;letter-spacing:.1px} .body-large{font:400 16px/24px Roboto;letter-spacing:.5px}
+  .body-medium{font:400 14px/20px Roboto;letter-spacing:.25px} .body-small{font:400 12px/16px Roboto;letter-spacing:.4px}
+  .label-large{font:500 14px/20px Roboto;letter-spacing:.1px} .label-medium{font:500 12px/16px Roboto;letter-spacing:.5px}
+  .label-small{font:500 11px/16px Roboto;letter-spacing:.5px}
+  .muted{color:var(--md-sys-color-on-surface-variant)}
+  body{margin:0;background:var(--md-sys-color-surface);color:var(--md-sys-color-on-surface);font:400 14px/20px Roboto}
+  md-icon{font-family:'Material Symbols Outlined'} .sym{font-family:'Material Symbols Outlined';font-size:18px;line-height:1;vertical-align:middle}
+
+  /* ---- layout + surfaces ---- */
+  .appbar{display:flex;align-items:center;gap:16px;padding:8px 16px;min-height:64px;flex-wrap:wrap;
+    background:var(--md-sys-color-surface-container);}
+  .grid{display:grid;gap:16px;padding:16px;grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr)}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--md-sys-color-surface-container-low);border-radius:var(--shape-md);padding:16px}
+  .card.outlined{background:var(--md-sys-color-surface);border:1px solid var(--md-sys-color-outline-variant)}
+  .searchbar{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;border-radius:var(--shape-xl);
+    background:var(--md-sys-color-surface-container-high);padding:4px 8px 4px 20px;min-height:56px}
+  .searchbar.compact{max-width:640px;min-height:48px;background:var(--md-sys-color-surface-container-highest)}
+  .searchbar input{flex:1;border:0;outline:0;background:transparent;color:var(--md-sys-color-on-surface);font:400 16px/24px Roboto;min-width:0}
+  .searchbar input::placeholder{color:var(--md-sys-color-on-surface-variant)}
+  .searchbar:focus-within{outline:2px solid var(--md-sys-color-primary)}
+
+  /* ---- status badges (tonal) ---- */
+  .badge{display:inline-flex;align-items:center;gap:4px;border-radius:var(--shape-sm);padding:2px 8px;font:500 11px/16px Roboto;
+    letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+  .badge .sym{font-size:14px}
+  .t-success{background:var(--cc-success-container);color:var(--cc-on-success-container)}
+  .t-warning{background:var(--cc-warning-container);color:var(--cc-on-warning-container)}
+  .t-error{background:var(--md-sys-color-error-container);color:var(--md-sys-color-on-error-container)}
+  .t-tertiary{background:var(--md-sys-color-tertiary-container);color:var(--md-sys-color-on-tertiary-container)}
+  .t-neutral{background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container)}
+  .accent-success{border-color:var(--cc-success)} .accent-warning{border-color:var(--cc-warning)}
+  .accent-error{border-color:var(--md-sys-color-error)} .accent-tertiary{border-color:var(--md-sys-color-tertiary)}
+  .accent-neutral{border-color:var(--md-sys-color-outline-variant)}
+
+  /* ---- tree: connector lines, icon-first rows, evidence chips ---- */
+  .sicon{font-family:'Material Symbols Outlined';font-size:20px;line-height:20px;flex:none;margin-top:1px;
+    font-variation-settings:'FILL' 1,'wght' 400}
+  .ic-success{color:var(--cc-success)} .ic-warning{color:var(--cc-warning)} .ic-error{color:var(--md-sys-color-error)}
+  .ic-tertiary{color:var(--md-sys-color-tertiary)} .ic-neutral{color:var(--md-sys-color-outline)}
+  /* ---- Shoelace <sl-tree>, themed with the M3 tokens above ---- */
+  :root{--sl-focus-ring-color:var(--md-sys-color-primary);--sl-color-primary-600:var(--md-sys-color-primary)}
+  sl-tree{--indent-size:18px;--indent-guide-width:2px;--indent-guide-color:var(--md-sys-color-outline-variant);--indent-guide-offset:0}
+  sl-tree-item::part(item){align-items:flex-start;min-height:0;padding:2px 4px;margin:2px 0;border-radius:var(--shape-sm);
+    border-inline-start:0;animation:pop 1.4s ease-out}
+  @keyframes pop{from{background:var(--md-sys-color-primary-container)}to{background:transparent}}
+  sl-tree-item::part(item):hover{background:color-mix(in srgb,var(--md-sys-color-on-surface) 8%,transparent)}
+  sl-tree-item::part(item--selected){background:var(--md-sys-color-secondary-container);color:var(--md-sys-color-on-secondary-container)}
+  sl-tree-item::part(expand-button){color:var(--md-sys-color-on-surface-variant);padding:6px 4px}
+  sl-tree-item::part(label){flex:1;min-width:0;font:400 14px/20px Roboto;color:var(--md-sys-color-on-surface)}
+  .tlabel{display:flex;gap:8px;align-items:flex-start;padding:4px 4px 4px 0}
+  .tbody{min-width:0;flex:1}
+  .kindlabel{font:500 11px/16px Roboto;letter-spacing:.5px;text-transform:uppercase;color:var(--md-sys-color-on-surface-variant)}
+  .ttext{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+  .ttext.dup{font-style:italic;color:var(--md-sys-color-on-surface-variant)}
+  .tmeta{font:400 12px/16px Roboto;color:var(--md-sys-color-on-surface-variant);margin-top:2px}
+  .tmeta .why{color:var(--cc-warning)} .tmeta .why.err{color:var(--md-sys-color-error)}
+  .ev{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .evchip{display:inline-flex;align-items:center;gap:4px;border-radius:var(--shape-sm);padding:2px 8px;cursor:pointer;
+    border:1px solid var(--md-sys-color-outline-variant);background:var(--md-sys-color-surface-container-lowest);
+    font:500 12px/16px Roboto;color:var(--md-sys-color-on-surface)}
+  .evchip .sym{font-size:14px}
+  .evchip:hover{background:var(--md-sys-color-surface-container-high)}
+  .evchip.bad{border-color:var(--md-sys-color-error);background:var(--md-sys-color-error-container);color:var(--md-sys-color-on-error-container)}
+  .evchip.sel{outline:2px solid var(--md-sys-color-primary)}
+  .legend{display:flex;flex-wrap:wrap;gap:4px 16px;align-items:center;margin:8px 0}
+  .legend span{display:inline-flex;align-items:center;gap:4px}
+  .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}
+  @media (max-width:820px){.side{position:static;max-height:none}}
+
+  /* ---- messages (banners) ---- */
+  .banner{display:flex;gap:8px;align-items:flex-start;border-radius:var(--shape-sm);padding:8px 12px;margin-top:8px}
+  .quote{background:var(--md-sys-color-surface-container-highest);border-radius:var(--shape-sm);padding:8px 12px;margin:8px 0}
+  mark{background:var(--md-sys-color-tertiary-container);color:var(--md-sys-color-on-tertiary-container);border-radius:2px;padding:0 2px}
+  .log{max-height:260px;overflow:auto;font:400 12px/18px 'Roboto Mono',monospace}
+  a{color:var(--md-sys-color-primary)}
+  .center{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:16px;box-sizing:border-box}
+  /* ---- brand lockup ---- */
+  .brand{display:inline-flex;align-items:center;gap:14px;user-select:none}
+  .brand .mark{display:grid;place-items:center;flex:none;border-radius:30%;
+    background:linear-gradient(135deg,var(--md-sys-color-primary),color-mix(in srgb,var(--md-sys-color-primary) 55%,var(--md-sys-color-tertiary)));
+    color:var(--md-sys-color-on-primary);box-shadow:0 4px 14px color-mix(in srgb,var(--md-sys-color-primary) 35%,transparent)}
+  .brand .mark md-icon{font-variation-settings:'FILL' 1,'wght' 500}
+  .brand .word{font-family:Roboto,system-ui,sans-serif;font-weight:500;
+    background:linear-gradient(90deg,var(--md-sys-color-primary),color-mix(in srgb,var(--md-sys-color-primary) 60%,var(--md-sys-color-tertiary)));
+    -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+  .brand.lg .mark{width:68px;height:68px} .brand.lg .mark md-icon{font-size:40px;width:40px;height:40px}
+  .brand.lg .word{font-size:56px;line-height:64px;letter-spacing:-1.5px}
+  .brand.sm{gap:10px} .brand.sm .mark{width:36px;height:36px;box-shadow:none} .brand.sm .mark md-icon{font-size:22px;width:22px;height:22px}
+  .brand.sm .word{font-size:22px;line-height:28px;letter-spacing:-.2px}
+  md-linear-progress{width:100%}
+  /* running indicator: an arc that travels around the outer edge of the Run button */
+  @property --run-angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+  .runwrap{position:relative;display:inline-flex;border-radius:999px;flex:none}
+  md-filled-button.stop{--md-filled-button-container-color:var(--md-sys-color-error);--md-filled-button-label-text-color:var(--md-sys-color-on-error);
+    --md-filled-button-hover-label-text-color:var(--md-sys-color-on-error);--md-filled-button-focus-label-text-color:var(--md-sys-color-on-error);
+    --md-filled-button-pressed-label-text-color:var(--md-sys-color-on-error)}
+  .runwrap.busy::before{content:"";position:absolute;inset:-4px;border-radius:999px;padding:3px;pointer-events:none;
+    background:conic-gradient(from var(--run-angle),transparent 0 55%,var(--md-sys-color-primary) 100%);
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+    mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+    animation:run-spin 1s linear infinite}
+  @keyframes run-spin{to{--run-angle:360deg}}
+  @media (prefers-reduced-motion:reduce){.runwrap.busy::before{animation-duration:2.5s}}
+  /* ---- flow canvas (React Flow) with M3 tokens ---- */
+  .flowwrap{height:calc(100vh - 250px);min-height:460px;border-radius:var(--shape-md);overflow:hidden;position:relative;
+    background:var(--md-sys-color-surface-container-low);border:1px solid var(--md-sys-color-outline-variant)}
+  .react-flow{background:transparent}
+  .react-flow__handle{opacity:0;width:6px;height:6px;min-width:0;min-height:0}
+  .tile{position:relative;box-sizing:border-box;border-radius:var(--shape-md);background:var(--md-sys-color-surface-container-lowest);
+    color:var(--md-sys-color-on-surface);border:1px solid var(--md-sys-color-outline-variant);border-left-width:5px;padding:8px 12px;
+    cursor:pointer;transition:opacity .2s;animation:pop 1.2s ease-out}
+  .tile.step{width:320px} .tile.claim{width:350px} .tile.record{width:230px;padding:6px 10px}
+  .tile.sel{outline:2px solid var(--md-sys-color-primary);outline-offset:1px}
+  .tile.tn-success{border-left-color:var(--cc-success)} .tile.tn-warning{border-left-color:var(--cc-warning)}
+  .tile.tn-error{border-left-color:var(--md-sys-color-error)} .tile.tn-tertiary{border-left-color:var(--md-sys-color-tertiary);border-left-style:dashed}
+  .tile.tn-neutral{border-left-color:var(--md-sys-color-outline)}
+  .tile.record.bad{background:var(--md-sys-color-error-container);color:var(--md-sys-color-on-error-container)}
+  .tile.claim{background:var(--md-sys-color-surface-container-high)}
+  .tile.action{width:260px;border-left-color:var(--md-sys-color-primary);background:var(--md-sys-color-surface-container)}
+  .tile.action .ttext{-webkit-line-clamp:3}
+  .tile.record.uncited{border-left-style:dotted}
+  .tile-head{display:flex;align-items:center;gap:6px}
+  .tile-head .sicon{margin-top:0}
+  .tile .ttext{-webkit-line-clamp:4}
+  .tile.record .ttext{-webkit-line-clamp:3;font:400 12px/16px Roboto}
+  .react-flow__controls{box-shadow:none;border:1px solid var(--md-sys-color-outline-variant);border-radius:var(--shape-sm);overflow:hidden}
+  .react-flow__controls-button{background:var(--md-sys-color-surface-container-high);color:var(--md-sys-color-on-surface);
+    border-bottom:1px solid var(--md-sys-color-outline-variant)}
+  .react-flow__controls-button:hover{background:var(--md-sys-color-surface-container-highest)}
+  .react-flow__controls-button svg{fill:currentColor;max-width:12px;max-height:12px}
+  .react-flow__minimap{background:var(--md-sys-color-surface-container);border-radius:var(--shape-sm);border:1px solid var(--md-sys-color-outline-variant)}
+  .react-flow__attribution{background:transparent;color:var(--md-sys-color-on-surface-variant)}
+  .react-flow__attribution a{color:inherit}
+  .legend.col{flex-direction:column;align-items:flex-start;gap:10px;margin:0}
+  .flowctl{position:relative;display:flex;flex-direction:column;align-items:flex-start}
+  .ctlbar{display:flex;flex-direction:column;border:1px solid var(--md-sys-color-outline-variant);border-radius:var(--shape-md);
+    background:var(--md-sys-color-surface-container-high);overflow:hidden}
+  .ctlbar > * + *{border-top:1px solid var(--md-sys-color-outline-variant)}
+  .ctlbar md-icon-button{--md-icon-button-icon-color:var(--md-sys-color-on-surface-variant);--md-icon-button-state-layer-height:40px;
+    --md-icon-button-state-layer-width:40px;border-radius:0}
+  .ctlbar md-icon-button.on{background:var(--md-sys-color-primary-container);--md-icon-button-icon-color:var(--md-sys-color-on-primary-container)}
+  .legendpop{position:absolute;left:calc(100% + 8px);bottom:0;min-width:200px;padding:12px 16px;border-radius:var(--shape-md);
+    background:var(--md-sys-color-surface-container-high);border:1px solid var(--md-sys-color-outline-variant);
+    box-shadow:0 2px 10px rgba(0,0,0,.3);z-index:6}
+  .flowempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--md-sys-color-on-surface-variant)}
+</style>
 </head>
 <body>
 <div id="root"></div>
-
+<script type="module" src="https://cdn.jsdelivr.net/npm/@material/web@2.2.0/all.js/+esm"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@mui/material@5.15.20/umd/material-ui.production.min.js"></script>
 <script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script src="https://unpkg.com/@dagrejs/dagre@1.1.4/dist/dagre.min.js"></script>
+<script src="https://unpkg.com/reactflow@11.11.4/dist/umd/index.js"></script>
 <script>
-const { useState, useEffect, useMemo } = React;
+const { useState, useEffect, useMemo, useReducer, useRef, useCallback } = React;
 const html = htm.bind(React.createElement);
-const { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Box, Card, CardActionArea,
-        CardContent, Chip, Alert, Button, Stack, Paper, Divider, useMediaQuery } = MaterialUI;
 
-const ORDER = { broken: 0, shaky: 1, solid: 2 };
-const COLOR = { solid: "success", pass: "success", shaky: "warning", weak: "warning",
-                broken: "error", fail: "error", assumed: "secondary" };
+const TONE = { solid:"success", pass:"success", shaky:"warning", weak:"warning", broken:"error", fail:"error",
+               assumed:"tertiary", pending:"neutral" };
+const ICON = { solid:"check_circle", pass:"check_circle", shaky:"warning", weak:"warning", broken:"cancel", fail:"cancel",
+               assumed:"help", pending:"hourglass_empty" };
+const EXAMPLES = {
+  synthetic: ["Is northwind-herald.example part of a coordinated influence operation?",
+              "Are accounts u1001-u1008 a coordinated swarm?",
+              "Who is paying for promotion of northwind-herald.example?"],
+  maltego: ["What is known about the web presence of maltego.com?"],
+};
 
-const Status = ({ s }) => html`<${Chip} size="small" label=${s} color=${COLOR[s]} sx=${{ fontWeight: 700, textTransform: "uppercase" }} />`;
+// ---------------- state ----------------
+const INIT = { phase:"idle", question:"", source:"synthetic", records:{}, steps:[], claims:[], actions:[], note:"", log:[], error:"" };
+function reduce(s, ev) {
+  switch (ev.type) {
+    case "reset": return { ...INIT, phase:"running", question:ev.question, source:ev.source };
+    case "records": return { ...s, records:{ ...s.records, ...ev.records } };
+    case "step": {
+      const steps = [...s.steps], i = steps.findIndex(x => x.id === ev.step.id);
+      if (i >= 0) steps[i] = ev.step; else steps.push(ev.step);
+      return { ...s, steps };
+    }
+    case "tool": return { ...s, log:[...s.log, { k:"tool", name:ev.name, args:ev.args }],
+      ...(ev.n ? { actions:[...s.actions, { n:ev.n, name:ev.name, args:ev.args, note:s.note, record_ids:[] }], note:"" } : {}) };
+    case "toolresult": return { ...s, log:[...s.log, { k:"result", name:ev.name, text:ev.text }],
+      actions:ev.n ? s.actions.map(a => a.n === ev.n ? { ...a, record_ids:ev.record_ids || [] } : a) : s.actions };
+    case "thought": return { ...s, note:ev.text.slice(0, 300), log:[...s.log, { k:"thought", text:ev.text }] };
+    case "done": return { ...s, phase:"done", steps:ev.trail.steps, claims:ev.trail.claims, records:ev.trail.records,
+                          actions:ev.trail.actions || s.actions };
+    case "error": return { ...s, phase:"error", error:ev.message };
+    case "stopped": return s.phase === "running"
+      ? { ...s, phase:"stopped", log:[...s.log, { k:"thought", text:"Stopped. Results so far are kept." }] } : s;
+    default: return s;
+  }
+}
+
+// ---------------- small pieces ----------------
+const Badge = ({ s, label }) => html`<span className=${"badge t-" + (TONE[s] || "neutral")}>
+  <span className="sym">${ICON[s] || "circle"}</span>${label || s}</span>`;
+const Banner = ({ tone, children }) => html`<div className=${"banner t-" + tone}>
+  <span className="sym">${tone === "error" ? "error" : "warning"}</span><div className="body-medium">${children}</div></div>`;
 
 function Quote({ rec, quote, ok }) {
-  const i = rec.text.toLowerCase().indexOf(quote.toLowerCase());
-  return html`<${Paper} variant="outlined" sx=${{ p: 1, my: 1, bgcolor: "action.hover" }}>
-    <${Typography} variant="caption" color="text.secondary">${rec.source}${rec.locator ? " · " + rec.locator : ""}<//>
-    <${Typography} variant="body2">${i >= 0
+  const i = quote ? rec.text.toLowerCase().indexOf(quote.toLowerCase()) : -1;
+  return html`<div className="quote">
+    <div className="label-small muted">${rec.source}${rec.locator ? " · " + rec.locator : ""}</div>
+    <div className="body-medium">${i >= 0
       ? html`${rec.text.slice(0, i)}<mark>${rec.text.slice(i, i + quote.length)}</mark>${rec.text.slice(i + quote.length)}`
-      : rec.text}<//>
-    ${!ok && html`<${Alert} severity="error" sx=${{ mt: 1, py: 0 }}>Quoted text not found in record: “${quote}”<//>`}
+      : rec.text}</div>
+    ${ok === false && html`<${Banner} tone="error">Quoted text not found in record: “${quote}”<//>`}
+  </div>`;
+}
+
+function StepDetail({ s, records }) {
+  return html`<div>
+    <div style=${{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+      <span className="label-medium muted" style=${{ textTransform:"uppercase" }}>${s.kind}</span>
+      <${Badge} s=${s.status} /><span className="label-large">${s.id}</span>
+    </div>
+    <div className="body-large" style=${{ marginTop:4 }}>${s.text}</div>
+    ${s.problems.map((p, i) => html`<${Banner} key=${i} tone=${s.status === "fail" ? "error" : "warning"}>${p}<//>`)}
+    ${(s.cite_checks || []).map((c, i) => records[c.record] &&
+      html`<${Quote} key=${i} rec=${records[c.record]} quote=${c.quote} ok=${c.ok} />`)}
+    ${(s.depends_on || []).length > 0 && html`<div className="body-small muted">builds on: ${s.depends_on.join(", ")}</div>`}
+  </div>`;
+}
+
+// ---------------- tree ----------------
+const KIND = { claim:"Conclusion", observation:"Found", inference:"Inferred", assumption:"Assumed" };
+const ORDER = { broken:0, shaky:1, solid:2 };
+
+function buildTree(state) {
+  const { steps, claims } = state;
+  const byId = Object.fromEntries(steps.map(s => [s.id, s]));
+  const stepNode = (id, path) => {
+    const s = byId[id];
+    if (!s || path.includes(id)) return null;
+    const kids = (s.depends_on || []).map(d => stepNode(d, [...path, id])).filter(Boolean);
+    const evidence = (s.cite_checks || []).map((c, i) => ({ key:`rec:${id}:${i}`, rid:c.record, ok:c.ok, why:c.why }));
+    return { key:`step:${id}`, type:"step", id, data:s, children:kids, evidence };
+  };
+  let roots;
+  if (claims.length) {
+    roots = [...claims].sort((a, b) => ORDER[a.status] - ORDER[b.status])
+      .map(c => ({ key:`claim:${c.id}`, type:"claim", id:c.id, data:c, evidence:[],
+                   children:c.supported_by.map(id => stepNode(id, [])).filter(Boolean) }));
+  } else {
+    const dependents = new Set(steps.flatMap(s => s.depends_on || []));
+    roots = steps.filter(s => !dependents.has(s.id)).map(s => stepNode(s.id, [])).filter(Boolean);
+  }
+  // a step shared by several parents is shown in full once, then as a short reference
+  const seen = new Set();
+  const mark = n => {
+    if (n.type === "step") {
+      if (seen.has(n.id)) { n.dup = true; n.children = []; n.evidence = []; return; }
+      seen.add(n.id);
+    }
+    n.children.forEach(mark);
+  };
+  roots.forEach(mark);
+  return roots;
+}
+
+const isBad = s => s !== "pass" && s !== "solid";
+const subtreeBad = n => isBad(n.data.status) || n.evidence.some(e => !e.ok) || n.children.some(subtreeBad);
+const allKeys = (ns, out = []) => (ns.forEach(n => { out.push(n); allKeys(n.children, out); }), out);
+
+function Node({ node, sel, onSel, records, isOpen }) {
+  const has = node.children.length > 0;
+  const open = isOpen(node);
+  const status = node.type === "claim" ? (node.data.status || "pending") : node.data.status;
+  const tone = TONE[status] || "neutral";
+  const kind = node.type === "claim" ? "claim" : node.data.kind;
+  const below = !open && has && node.children.some(subtreeBad);
+  const c = node.data;
+  return html`<sl-tree-item data-nk=${node.key} expanded=${has && open ? "" : undefined}>
+    <div className="tlabel">
+      <span className=${"sicon ic-" + tone} title=${status}>${node.dup ? "link" : ICON[status] || "circle"}</span>
+      <div className="tbody">
+        <div className="kindlabel">${KIND[kind]} · ${node.id}${status === "assumed" ? " · not backed by a record" : ""}</div>
+        ${node.dup
+          ? html`<div className="ttext dup body-medium">Same finding as above — ${c.text}</div>`
+          : html`<div className=${"ttext " + (node.type === "claim" ? "title-small" : "body-medium")}>${c.text}</div>`}
+        ${node.type === "claim" && html`<div className="tmeta">
+          stated ${c.stated_confidence} · ${c.independent_sources} independent source${c.independent_sources === 1 ? "" : "s"}
+          ${c.overconfident ? html` · <b style=${{ color:"var(--md-sys-color-error)" }}>overconfident</b>` : null}
+          ${c.reasons && c.reasons[0] ? html`<div className=${"why" + (status === "broken" ? " err" : "")}>${c.reasons[0]}</div>` : null}</div>`}
+        ${node.type === "step" && !node.dup && c.problems && c.problems[0] && html`<div className="tmeta">
+          <span className=${"why" + (status === "fail" ? " err" : "")}>${c.problems[0]}</span></div>`}
+        ${below && html`<div className="tmeta"><span className="why">▸ issues further down</span></div>`}
+        ${node.evidence.length > 0 && html`<div className="ev">${node.evidence.map(e => {
+          const r = records[e.rid];
+          return html`<span key=${e.key} className=${"evchip" + (e.ok ? "" : " bad") + (sel === e.key ? " sel" : "")}
+              title=${e.ok ? "quote verified in record" : (e.why || "quote not found")}
+              onClick=${ev => { ev.stopPropagation(); onSel(e.key); }}>
+              <span className="sym">${e.ok ? "description" : "error"}</span>${e.rid} · ${r ? r.source : "missing"}</span>`; })}</div>`}
+      </div>
+    </div>
+    ${node.children.map(ch => html`<${Node} key=${ch.key} node=${ch} sel=${sel} onSel=${onSel} records=${records} isOpen=${isOpen} />`)}
+  </sl-tree-item>`;
+}
+
+// Shoelace <sl-tree> does indentation guides, expand/collapse, single selection, keyboard nav and ARIA.
+function TreeView({ tree, sel, onSel, records, isOpen }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const h = e => { const it = e.detail.selection[0]; if (it && it.dataset.nk) onSel(it.dataset.nk); };
+    el.addEventListener("sl-selection-change", h);
+    return () => el.removeEventListener("sl-selection-change", h);
+  }, [onSel]);
+  return html`<sl-tree ref=${ref} selection="single">${tree.map(n =>
+    html`<${Node} key=${n.key} node=${n} sel=${sel} onSel=${onSel} records=${records} isOpen=${isOpen} />`)}</sl-tree>`;
+}
+
+
+// ---------------- flow view: React Flow tiles + dagre layout ----------------
+const RF = window.ReactFlow;
+const ReactFlowComp = RF.default || RF.ReactFlow;
+const { Background, MiniMap, Panel, Handle, Position, MarkerType, ReactFlowProvider, useReactFlow, applyNodeChanges } = RF;
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function buildGraph(state, onlyIssues) {
+  const { steps, claims, records } = state;
+  const stepIds = new Set(steps.map(s => s.id));
+  const nodes = [], edges = [], recBad = {};
+  steps.forEach(s => (s.cite_checks || []).forEach(c => { if (!c.ok) recBad[c.record] = true; }));
+  const actions = state.actions || [];
+  actions.forEach(a => nodes.push({ id:`action:${a.n}`, type:"tile", data:{ kind:"action", a } }));
+  const citedSet = new Set(steps.flatMap(s => (s.cite_checks || []).map(c => c.record)));
+  const shown = [...new Set([...actions.flatMap(a => a.record_ids || []), ...citedSet])].filter(r => records[r]);
+  shown.forEach(rid => nodes.push({ id:`record:${rid}`, type:"tile",
+    data:{ kind:"record", rid, rec:records[rid], bad:!!recBad[rid], cited:citedSet.has(rid) } }));
+  steps.forEach(s => nodes.push({ id:`step:${s.id}`, type:"tile", data:{ kind:"step", s } }));
+  claims.forEach(c => nodes.push({ id:`claim:${c.id}`, type:"tile", data:{ kind:"claim", c } }));
+  steps.forEach(s => {
+    const byRec = {};
+    (s.cite_checks || []).forEach((c, i) => {
+      if (!records[c.record]) return;
+      const e = byRec[c.record] || (byRec[c.record] = { ok:true, idx:i });
+      if (!c.ok) { e.ok = false; e.idx = i; }
+    });
+    Object.entries(byRec).forEach(([rid, e]) => edges.push({ id:`e:${rid}>${s.id}`, source:`record:${rid}`, target:`step:${s.id}`,
+      data:{ key:`rec:${s.id}:${e.idx}`, ok:e.ok, kind:"cite" } }));
+    (s.depends_on || []).filter(d => stepIds.has(d)).forEach(d => edges.push({ id:`e:${d}>${s.id}`,
+      source:`step:${d}`, target:`step:${s.id}`, data:{ kind:"dep", ok:true } }));
+  });
+  claims.forEach(c => c.supported_by.filter(d => stepIds.has(d)).forEach(d => edges.push({ id:`e:${d}>${c.id}`,
+    source:`step:${d}`, target:`claim:${c.id}`, data:{ kind:"support", ok:true } })));
+  actions.forEach(a => (a.record_ids || []).filter(r => records[r]).forEach(rid => edges.push({ id:`e:a${a.n}>${rid}`,
+    source:`action:${a.n}`, target:`record:${rid}`, data:{ kind:"fetch", ok:true } })));
+  if (onlyIssues && claims.length) {                       // non-solid conclusions plus everything upstream of them
+    const parents = {};
+    edges.forEach(e => (parents[e.target] = parents[e.target] || []).push(e.source));
+    const keep = new Set(), walk = id => { if (keep.has(id)) return; keep.add(id); (parents[id] || []).forEach(walk); };
+    claims.filter(c => c.status !== "solid").forEach(c => walk(`claim:${c.id}`));
+    return { nodes:nodes.filter(n => keep.has(n.id)), edges:edges.filter(e => keep.has(e.source) && keep.has(e.target)) };
+  }
+  return { nodes, edges };
+}
+
+function layoutGraph(nodes, edges) {
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir:"LR", nodesep:18, ranksep:90, marginx:20, marginy:20 });
+  g.setDefaultEdgeLabel(() => ({}));
+  nodes.forEach(n => g.setNode(n.id, { width:n.width || 300, height:n.height || 100 }));
+  edges.forEach(e => g.setEdge(e.source, e.target));
+  dagre.layout(g);
+  const out = nodes.map(n => { const p = g.node(n.id);
+    return { ...n, position:{ x:p.x - p.width / 2, y:p.y - p.height / 2 }, data:{ ...n.data, laid:true } }; });
+  // dagre orders a column to cut crossings; the agent's actions must read in the order it took them
+  const acts = out.filter(n => n.data.kind === "action").sort((a, b) => a.data.a.n - b.data.a.n);
+  if (acts.length > 1) {
+    const h = n => n.height || 100, gap = 16;
+    const total = acts.reduce((s, n) => s + h(n) + gap, -gap);
+    const mid = (Math.min(...acts.map(n => n.position.y)) + Math.max(...acts.map(n => n.position.y + h(n)))) / 2;
+    let y = mid - total / 2;
+    acts.forEach(n => { n.position = { x:n.position.x, y }; y += h(n) + gap; });
+  }
+  return out;
+}
+
+const ACTION_ICON = { search_records:"search", get_record:"find_in_page", find_capabilities:"manage_search", describe:"info", run:"play_circle" };
+const actionSummary = a => {
+  const g = a.args || {};
+  if (a.name === "search_records") return `Searched for “${g.query}”`;
+  if (a.name === "get_record") return `Opened record ${g.record_id}`;
+  if (a.name === "find_capabilities") return `Looked for transforms: ${g.goal}`;
+  if (a.name === "run") return `Ran ${g.capability_id} on ${g.entity_value || g.from_record || ""}`;
+  if (a.name === "describe") return `Read docs for ${(g.ids || []).join(", ")}`;
+  const t = JSON.stringify(g); return `${a.name} ${t.length > 80 ? t.slice(0, 80) + "…" : t}`;
+};
+
+function Tile({ data }) {
+  const style = { opacity:data.laid ? (data.dim ? 0.28 : 1) : 0 };
+  const cls = base => `tile ${base} tn-${data.tone}${data.sel ? " sel" : ""}`;
+  const ends = html`<${Handle} type="target" position=${Position.Left} /><${Handle} type="source" position=${Position.Right} />`;
+  if (data.kind === "action") {
+    const a = data.a, n = (a.record_ids || []).length;
+    return html`<div className=${"tile action" + (data.sel ? " sel" : "")} style=${style}>${ends}
+      <div className="tile-head"><span className="sym">${ACTION_ICON[a.name] || "bolt"}</span>
+        <span className="kindlabel">Action ${a.n} · ${a.name}</span></div>
+      <div className="ttext body-medium">${actionSummary(a)}</div>
+      ${a.note ? html`<div className="tmeta" style=${{ fontStyle:"italic" }}>“${a.note}”</div>` : null}
+      <div className="tmeta">→ ${n} record${n === 1 ? "" : "s"}</div>
+    </div>`;
+  }
+  if (data.kind === "record") {
+    return html`<div className=${cls("record") + (data.bad ? " bad" : "") + (data.cited === false ? " uncited" : "")} style=${style}>${ends}
+      <div className="tile-head"><span className="sym">${data.bad ? "error" : "description"}</span>
+        <span className="kindlabel" style=${{ color:"inherit" }}>${data.rid} · ${data.rec.source}${data.cited === false ? " · not used" : ""}</span></div>
+      <div className="ttext">${data.rec.text}</div></div>`;
+  }
+  const status = data.kind === "claim" ? (data.c.status || "pending") : data.s.status;
+  const icon = ICON[status] || "circle";
+  if (data.kind === "claim") {
+    const c = data.c;
+    return html`<div className=${cls("claim")} style=${style}>${ends}
+      <div className="tile-head"><span className=${"sicon ic-" + data.tone}>${icon}</span>
+        <span className="kindlabel">Conclusion · ${c.id}</span></div>
+      <div className="ttext title-small">${c.text}</div>
+      <div className="tmeta">stated ${c.stated_confidence} · ${c.independent_sources} independent source${c.independent_sources === 1 ? "" : "s"}
+        ${c.overconfident ? html` · <b style=${{ color:"var(--md-sys-color-error)" }}>overconfident</b>` : null}</div>
+      ${c.reasons && c.reasons[0] ? html`<div className="tmeta"><span className=${"why" + (status === "broken" ? " err" : "")}>${c.reasons[0]}</span></div>` : null}
+    </div>`;
+  }
+  const s = data.s;
+  return html`<div className=${cls("step")} style=${style}>${ends}
+    <div className="tile-head"><span className=${"sicon ic-" + data.tone}>${icon}</span>
+      <span className="kindlabel">${KIND[s.kind]} · ${s.id}${status === "assumed" ? " · not backed by a record" : ""}</span></div>
+    <div className="ttext body-medium">${s.text}</div>
+    ${s.problems && s.problems[0] ? html`<div className="tmeta"><span className=${"why" + (status === "fail" ? " err" : "")}>${s.problems[0]}</span></div>` : null}
+  </div>`;
+}
+const nodeTypes = { tile:Tile };
+
+function FlowControls() {
+  const rf = useReactFlow();
+  const [open, setOpen] = useState(false);
+  return html`<${Panel} position="bottom-left"><div className="flowctl">
+    <div className="ctlbar">
+      <md-icon-button className=${open ? "on" : ""} aria-label="Legend" aria-expanded=${String(open)} title="What the icons and lines mean"
+        onClick=${() => setOpen(o => !o)}><md-icon>info</md-icon></md-icon-button>
+      <md-icon-button aria-label="Zoom in" title="Zoom in" onClick=${() => rf.zoomIn({ duration:200 })}><md-icon>add</md-icon></md-icon-button>
+      <md-icon-button aria-label="Zoom out" title="Zoom out" onClick=${() => rf.zoomOut({ duration:200 })}><md-icon>remove</md-icon></md-icon-button>
+      <md-icon-button aria-label="Fit everything" title="Fit everything" onClick=${() => rf.fitView({ padding:0.12, duration:300 })}><md-icon>fit_screen</md-icon></md-icon-button>
+    </div>
+    ${open && html`<div className="legendpop" role="dialog" aria-label="Legend"><${Legend} flow column /></div>`}
+  </div><//>`;
+}
+
+function FlowCanvas({ graph, sel, onSel, fitKey, state, running }) {
+  const rf = useReactFlow();
+  const [nodes, setNodes] = useState([]);
+  const sig = useRef(""), touched = useRef(false), lastFit = useRef("");
+  const nodesRef = useRef([]), focusRef = useRef(null), runRef = useRef(false), graphRef = useRef(graph);
+  const seenRef = useRef({}), seq = useRef(0);            // order in which tiles first appeared
+  nodesRef.current = nodes; runRef.current = running; graphRef.current = graph;
+  graph.nodes.forEach(n => { if (!(n.id in seenRef.current)) seenRef.current[n.id] = ++seq.current; });
+  // fit to the selected path; while running, to the newest tiles; otherwise to everything
+  const fitTo = useCallback(() => {
+    const recent = () => {                                              // while running: the newest action or finding + what it connects to
+      const ns = nodesRef.current.filter(n => n.data.kind === "action" || n.data.kind === "step");
+      if (!ns.length) return [];
+      const newest = ns.reduce((a, b) => (seenRef.current[b.id] || 0) > (seenRef.current[a.id] || 0) ? b : a);
+      const nb = graphRef.current.edges.filter(e => e.source === newest.id || e.target === newest.id).flatMap(e => [e.source, e.target]);
+      return [...new Set([newest.id, ...nb])];
+    };
+    const ids = focusRef.current || (runRef.current ? recent() : null);
+    rf.fitView({ nodes:ids && ids.length ? ids.map(id => ({ id })) : undefined, padding:0.15, duration:350, maxZoom:1,
+                 minZoom:(!focusRef.current && runRef.current) ? 0.55 : 0.4 });
+  }, [rf]);
+  const onNodesChange = useCallback(ch => setNodes(ns => applyNodeChanges(ch, ns)), []);
+
+  // adopt the latest graph, keeping measured sizes and positions of nodes we already know
+  useEffect(() => {
+    setNodes(prev => { const pm = Object.fromEntries(prev.map(n => [n.id, n]));
+      return graph.nodes.map(n => { const p = pm[n.id];
+        return p ? { ...n, position:p.position, width:p.width, height:p.height, data:{ ...n.data, laid:p.data.laid } }
+                 : { ...n, position:{ x:0, y:0 } }; }); });
+  }, [graph]);
+
+  // once every tile has been measured, run dagre; re-run whenever sizes or links change
+  useEffect(() => {
+    if (!nodes.length || nodes.some(n => !n.width || !n.height)) return;
+    const s = nodes.map(n => `${n.id}:${Math.round(n.width)}x${Math.round(n.height)}`).join("|") + "#" + graph.edges.map(e => e.id).join(",");
+    if (s === sig.current) return;
+    sig.current = s;
+    setNodes(ns => layoutGraph(ns, graph.edges));
+    if (!touched.current || lastFit.current !== fitKey) {          // follow the run until the user pans or zooms
+      lastFit.current = fitKey;
+      setTimeout(fitTo, 80);
+    }
+  }, [nodes, graph, fitKey]);
+  useEffect(() => { touched.current = false; }, [fitKey]);
+
+  // selection highlight: the selected tile plus everything upstream and downstream; the rest fades
+  const { nodesD, edgesD } = useMemo(() => {
+    let focus = null, selNodes = new Set(), selEdge = null;
+    if (sel) {
+      if (sel.startsWith("rec:")) {
+        const [, sid, idx] = sel.split(":"), st = state.steps.find(x => x.id === sid), c = st && st.cite_checks[+idx];
+        if (c) { selNodes = new Set([`step:${sid}`, `record:${c.record}`]); focus = new Set(selNodes); selEdge = `e:${c.record}>${sid}`; }
+      } else {
+        selNodes = new Set([sel]); focus = new Set([sel]);
+        const up = id => graph.edges.filter(e => e.target === id).forEach(e => { if (!focus.has(e.source)) { focus.add(e.source); up(e.source); } });
+        const down = id => graph.edges.filter(e => e.source === id).forEach(e => { if (!focus.has(e.target)) { focus.add(e.target); down(e.target); } });
+        up(sel); down(sel);
+      }
+    }
+    focusRef.current = focus ? [...focus] : null;
+    const nodesD = nodes.map(n => {
+      const status = n.data.kind === "action" ? "pending" : n.data.kind === "claim" ? (n.data.c.status || "pending") : n.data.kind === "step" ? n.data.s.status : (n.data.bad ? "fail" : "pass");
+      return { ...n, draggable:false, data:{ ...n.data, tone:TONE[status] || "neutral", sel:selNodes.has(n.id), dim:!!focus && !focus.has(n.id) } };
+    });
+    const ok = tok("--md-sys-color-outline"), bad = tok("--md-sys-color-error"), hi = tok("--md-sys-color-primary");
+    const edgesD = graph.edges.map(e => {
+      const inFocus = !focus || (focus.has(e.source) && focus.has(e.target));
+      const color = e.data.ok === false ? bad : (focus && inFocus ? hi : ok);
+      return { ...e, type:"default", animated:false, selectable:true,
+        markerEnd:{ type:MarkerType.ArrowClosed, color, width:16, height:16 },
+        style:{ stroke:color, strokeWidth:(focus && inFocus) || e.id === selEdge ? 2.5 : 1.5, opacity:inFocus ? 1 : 0.15,
+                strokeDasharray:e.data.ok === false ? "6 4" : (e.data.kind === "fetch" ? "2 5" : undefined) } };
+    });
+    return { nodesD, edgesD };
+  }, [nodes, graph, sel, state.steps]);
+
+  useEffect(() => { if (sel) { const t = setTimeout(fitTo, 60); return () => clearTimeout(t); } }, [sel]);
+
+  return html`<${ReactFlowComp} nodes=${nodesD} edges=${edgesD} nodeTypes=${nodeTypes} onNodesChange=${onNodesChange}
+      nodesDraggable=${false} nodesConnectable=${false} minZoom=${0.15} maxZoom=${1.6}
+      onNodeClick=${(e, n) => onSel(n.id)} onEdgeClick=${(e, ed) => ed.data && ed.data.key && onSel(ed.data.key)}
+      onPaneClick=${() => onSel(null)} onMoveStart=${e => { if (e) touched.current = true; }}>
+    <${Background} gap=${22} size=${1.5} color=${tok("--md-sys-color-outline-variant")} />
+    <${FlowControls} />
+    <${MiniMap} pannable zoomable nodeColor=${n => n.data.bad ? tok("--md-sys-color-error") : tok("--md-sys-color-outline")}
+      maskColor=${tok("--md-sys-color-surface-container-high")} />
   <//>`;
 }
 
-function Step({ s, trail }) {
-  const bd = { pass: "success.main", weak: "warning.main", fail: "error.main", assumed: "secondary.main" }[s.status];
-  return html`<${Box} sx=${{ borderLeft: 4, borderColor: bd, borderStyle: s.status === "assumed" ? "dashed" : "solid", pl: 1.5, my: 1.5 }}>
-    <${Stack} direction="row" spacing=${1} alignItems="center" flexWrap="wrap">
-      <${Typography} variant="overline" color="text.secondary">${s.kind}<//>
-      <${Status} s=${s.status} />
-      <${Typography} variant="body2" fontWeight=${700}>${s.id}<//>
-    <//>
-    <${Typography} variant="body1">${s.text}<//>
-    ${s.problems.map((p, i) => html`<${Alert} key=${i} severity=${s.status === "fail" ? "error" : "warning"} sx=${{ mt: 0.5, py: 0 }}>${p}<//>`)}
-    ${(s.cite_checks || []).map((c, i) => trail.records[c.record] &&
-      html`<${Quote} key=${i} rec=${trail.records[c.record]} quote=${c.quote} ok=${c.ok} />`)}
-    ${(s.depends_on || []).length > 0 && html`<${Typography} variant="caption" color="text.secondary">builds on: ${s.depends_on.join(", ")}<//>`}
-  <//>`;
+function FlowView({ state, sel, onSel, onlyIssues, fitKey, running }) {
+  const graph = useMemo(() => buildGraph(state, onlyIssues), [state.steps, state.claims, state.records, onlyIssues]);
+  return html`<div className="flowwrap">
+    <${ReactFlowProvider}><${FlowCanvas} graph=${graph} sel=${sel} onSel=${onSel} fitKey=${fitKey} state=${state} running=${running} /><//>
+    ${graph.nodes.length === 0 && html`<div className="flowempty body-medium">${running ? "Agent is gathering evidence…" : "No findings."}</div>`}
+  </div>`;
 }
 
-function Chain({ claim, trail }) {
-  const steps = claim.steps_in_chain.map(id => trail.steps.find(s => s.id === id));
-  return html`<${Card} variant="outlined"><${CardContent}>
-    <${Stack} direction="row" spacing=${1} alignItems="center"><${Status} s=${claim.status} />
-      <${Typography} variant="h6">${claim.id}<//><//>
-    <${Typography} variant="h6" fontWeight=${400}>${claim.text}<//>
-    <${Typography} variant="body2" color="text.secondary">Agent stated: ${claim.stated_confidence} · independent sources: ${claim.independent_sources}<//>
-    ${claim.reasons.map((r, i) => html`<${Alert} key=${i} severity=${claim.status === "broken" ? "error" : "warning"} sx=${{ mt: 1 }}>${r}<//>`)}
-    <${Divider} sx=${{ my: 2 }} />
-    <${Typography} variant="subtitle1" fontWeight=${500}>Reasoning chain<//>
-    ${steps.map(s => html`<${Step} key=${s.id} s=${s} trail=${trail} />`)}
-  <//><//>`;
+function Legend({ flow, column }) {
+  return html`<div className=${"legend body-small muted" + (column ? " col" : "")}>
+    <span><span className="sicon ic-success">check_circle</span>verified</span>
+    <span><span className="sicon ic-warning">warning</span>weak</span>
+    <span><span className="sicon ic-error">cancel</span>failed</span>
+    <span><span className="sicon ic-tertiary">help</span>assumption</span>
+    ${flow && html`<span><span className="sym">search</span>agent action</span>`}
+    <span><span className="sym">description</span>record</span>
+    ${flow && html`<span><span className="sym">arrow_right_alt</span>feeds into</span>
+      <span><span style=${{ color:"var(--md-sys-color-error)", fontWeight:700, letterSpacing:1 }}>- - -</span>quote not found</span>`}
+  </div>`;
+}
+
+// ---------------- detail + log ----------------
+function Detail({ state, selKey }) {
+  const { steps, claims, records } = state;
+  if (!selKey) return html`<div className="body-medium muted">Select a tile to see its evidence.</div>`;
+  const [type, a, b] = selKey.split(":");
+  if (type === "step") { const s = steps.find(x => x.id === a); return s ? html`<${StepDetail} s=${s} records=${records} />` : null; }
+  if (type === "action") {
+    const act = (state.actions || []).find(x => String(x.n) === a); if (!act) return null;
+    return html`<div>
+      <div className="label-large">Action ${act.n} · ${act.name}</div>
+      <div className="body-large" style=${{ margin:"4px 0" }}>${actionSummary(act)}</div>
+      ${act.note && html`<div className="body-medium muted" style=${{ fontStyle:"italic" }}>Agent's reason: “${act.note}”</div>`}
+      <pre className="body-small quote" style=${{ whiteSpace:"pre-wrap", wordBreak:"break-word", fontFamily:"Roboto Mono, monospace" }}>${JSON.stringify(act.args, null, 2)}</pre>
+      <div className="title-small">Returned ${(act.record_ids || []).length} record${(act.record_ids || []).length === 1 ? "" : "s"}</div>
+      ${(act.record_ids || []).map(rid => records[rid] && html`<${Quote} key=${rid} rec=${records[rid]} quote=${null} />`)}
+    </div>`;
+  }
+  if (type === "record") {
+    const r = records[a]; if (!r) return null;
+    const citing = steps.filter(s => (s.cite_checks || []).some(c => c.record === a));
+    return html`<div><${Quote} rec=${r} quote=${null} />
+      <div className="body-small muted">cited by: ${citing.map(s => s.id).join(", ") || "nothing yet"}</div></div>`;
+  }
+  if (type === "rec") {
+    const s = steps.find(x => x.id === a), c = s && s.cite_checks[+b];
+    return c && records[c.record] ? html`<${Quote} rec=${records[c.record]} quote=${c.quote} ok=${c.ok} />` : null;
+  }
+  const c = claims.find(x => x.id === a);
+  if (!c) return null;
+  return html`<div>
+    <div style=${{ display:"flex", gap:8, alignItems:"center" }}><${Badge} s=${c.status} /><span className="label-large">${c.id}</span></div>
+    <div className="title-large" style=${{ margin:"4px 0" }}>${c.text}</div>
+    <div className="body-medium muted">Agent stated: ${c.stated_confidence} · independent sources: ${c.independent_sources}</div>
+    ${c.reasons.map((r, i) => html`<${Banner} key=${i} tone=${c.status === "broken" ? "error" : "warning"}>${r}<//>`)}
+  </div>`;
+}
+
+function Activity({ log, running }) {
+  const ref = useRef(null);
+  useEffect(() => { if (ref.current) ref.current.scrollTop = ref.current.scrollHeight; }, [log.length]);
+  const short = a => { try { const t = JSON.stringify(a); return t.length > 140 ? t.slice(0, 140) + "…" : t; } catch { return ""; } };
+  return html`<div className="log" ref=${ref}>
+    ${log.map((l, i) => l.k === "tool"
+      ? html`<div key=${i} style=${{ color:"var(--md-sys-color-primary)" }}>▶ ${l.name} ${short(l.args)}</div>`
+      : l.k === "result"
+      ? html`<div key=${i} className="muted" style=${{ marginBottom:4, wordBreak:"break-word" }}>${l.text}</div>`
+      : html`<div key=${i} style=${{ fontStyle:"italic", marginBottom:4 }}>${l.text}</div>`)}
+    ${running && html`<div className="muted">…</div>`}
+  </div>`;
+}
+
+function Brand({ size, onClick }) {
+  return html`<div className=${"brand " + size} onClick=${onClick} style=${{ cursor:onClick ? "pointer" : "default" }}
+      role=${onClick ? "link" : undefined} aria-label="CSA Check">
+    <span className="mark"><md-icon>fact_check</md-icon></span>
+    <span className="word">CSA Check</span>
+  </div>`;
+}
+
+// ---------------- screens ----------------
+function SearchBar({ value, onChange, onSubmit, compact, busy, onStop }) {
+  return html`<div className=${"searchbar" + (compact ? " compact" : "")} style=${{ maxWidth:compact ? 640 : 720 }}>
+    <md-icon>search</md-icon>
+    <input autoFocus=${!compact} value=${value} placeholder="Enter a case question…"
+      onChange=${e => onChange(e.target.value)} onInput=${e => onChange(e.target.value)}
+      onKeyDown=${e => { if (e.key === "Enter") onSubmit(); }} />
+    <span className=${"runwrap" + (busy ? " busy" : "")} role=${busy ? "status" : undefined} aria-label=${busy ? "Running" : undefined}>
+      <md-filled-button class=${busy ? "stop" : undefined} aria-busy=${busy ? "true" : undefined}
+        aria-label=${busy ? "Stop the running investigation" : undefined}
+        onClick=${() => (busy && onStop) ? onStop() : (value.trim() && onSubmit())}>${busy && onStop ? "Stop" : "Run"}</md-filled-button>
+    </span>
+  </div>`;
+}
+
+function SourcePicker({ source, setSource }) {
+  /* single-select via filter chips; re-assert selection so a second click can't un-select */
+  const chip = (value, label) => html`<md-filter-chip key=${value + (source === value)} label=${label}
+    selected=${source === value ? "" : undefined}
+    onClick=${e => { e.currentTarget.selected = true; setSource(value); }}></md-filter-chip>`;
+  return html`<md-chip-set>${chip("synthetic", "Demo data (synthetic)")}${chip("maltego", "Maltego (live)")}</md-chip-set>`;
+}
+
+function Landing({ q, setQ, source, setSource, go }) {
+  return html`<div className="center">
+    <${Brand} size="lg" />
+    <div className="body-large muted" style=${{ textAlign:"center" }}>Ask a question. Watch an AI investigation get fact-checked at every step.</div>
+    <${SearchBar} value=${q} onChange=${setQ} onSubmit=${() => go(q)} />
+    <${SourcePicker} source=${source} setSource=${setSource} />
+    <md-chip-set style=${{ justifyContent:"center", maxWidth:760 }}>
+      ${EXAMPLES[source].map(e => html`<md-suggestion-chip key=${e} label=${e} onClick=${() => { setQ(e); go(e); }}></md-suggestion-chip>`)}
+    </md-chip-set>
+  </div>`;
+}
+
+function ChoiceChips({ value, onChange, options }) {
+  /* single-select via filter chips; re-assert selection so a second click can't un-select */
+  return html`<md-chip-set>${options.map(([v, label]) => html`<md-filter-chip key=${v + (value === v)} label=${label}
+    selected=${value === v ? "" : undefined} onClick=${e => { e.currentTarget.selected = true; onChange(v); }}></md-filter-chip>`)}</md-chip-set>`;
+}
+
+function RunView({ state, q, setQ, go, reset, stop }) {
+  const [sel, setSel] = useState(null);
+  const [view, setView] = useState("flow");              // flow | outline
+  const [onlyIssues, setOnlyIssues] = useState(false);
+  const [mode, setMode] = useState("auto");               // outline: auto | all | none
+  const [ver, setVer] = useState(0);
+  const tree = useMemo(() => buildTree(state), [state.steps, state.claims]);
+  const running = state.phase === "running";
+  const counts = state.claims.reduce((m, c) => (m[c.status] = (m[c.status] || 0) + 1, m), {});
+  const stepCounts = state.steps.reduce((m, s) => (m[s.status] = (m[s.status] || 0) + 1, m), {});
+  const attention = state.steps.filter(s => isBad(s.status)).length;
+
+  // outline view: while running everything stays open; once done, only branches with problems start open
+  const isOpen = n => mode === "all" ? true : mode === "none" ? false : (running ? true : subtreeBad(n));
+  const setAll = m => { setMode(m); setVer(v => v + 1); };
+  useEffect(() => { setMode("auto"); setSel(null); setOnlyIssues(false); }, [state.question]);
+  useEffect(() => {                                    // finished: start on the worst conclusion
+    if (state.phase === "done" && state.claims.length) {
+      const w = [...state.claims].sort((a, b) => ORDER[a.status] - ORDER[b.status])[0];
+      setSel(`claim:${w.id}`);
+    }
+  }, [state.phase]);
+
+  return html`<div>
+    <div className="appbar">
+      <${Brand} size="sm" onClick=${reset} />
+      <${SearchBar} compact busy=${running} onStop=${stop} value=${q} onChange=${setQ} onSubmit=${() => go(q)} />
+      <span style=${{ flex:1 }}></span>
+      <div style=${{ display:"flex", gap:8 }}>
+        ${state.phase === "done"
+          ? html`<span className="badge t-success">${counts.solid || 0} solid</span>
+                 <span className="badge t-warning">${counts.shaky || 0} shaky</span>
+                 <span className="badge t-error">${counts.broken || 0} broken</span>`
+          : html`${state.phase === "stopped" && html`<span className="badge t-warning">stopped</span>`}
+                 <span className="badge t-neutral">${state.steps.length} steps checked</span>
+                 ${stepCounts.fail > 0 && html`<span className="badge t-error">${stepCounts.fail} failed</span>`}`}
+      </div>
+    </div>
+    ${state.phase === "error" && html`<div style=${{ margin:16 }}><${Banner} tone="error">${state.error}<//></div>`}
+    <div className="grid">
+      <div className="card">
+        <div className="title-medium">${state.question}</div>
+        <div className="body-small muted">${view === "flow"
+          ? "Records feed findings, findings feed conclusions. Click a tile to light up its whole path; click a line to read the quote."
+          : "Conclusions with the reasoning and records beneath each."}</div>
+        <div className="toolbar">
+          <${ChoiceChips} value=${view} onChange=${setView} options=${[["flow", "Flow"], ["outline", "Outline"]]} />
+          ${view === "flow" && html`<md-chip-set><md-filter-chip key=${"oi" + onlyIssues} label="Only issues"
+              selected=${onlyIssues ? "" : undefined} disabled=${state.claims.length ? undefined : ""}
+              onClick=${e => setOnlyIssues(e.currentTarget.selected)}></md-filter-chip></md-chip-set>`}
+          ${view === "outline" && html`<md-text-button onClick=${() => setAll("all")}>Expand all</md-text-button>
+              <md-text-button onClick=${() => setAll("none")}>Collapse all</md-text-button>`}
+          ${state.steps.length > 0 && html`<span className="body-small muted">${attention === 0 ? "every step checked out" : attention + " step" + (attention === 1 ? "" : "s") + " need attention"}</span>`}
+        </div>
+        ${view === "outline" && html`<${Legend} />`}
+        ${view === "flow"
+          ? html`<${FlowView} state=${state} sel=${sel} onSel=${setSel} onlyIssues=${onlyIssues} running=${running}
+              fitKey=${state.phase + "|" + onlyIssues + "|" + view} />`
+          : html`<md-divider style=${{ margin:"4px 0 8px" }}></md-divider>
+              ${tree.length === 0 && html`<div className="body-medium muted">${running ? "Agent is gathering evidence…" : "No findings."}</div>`}
+              <${TreeView} key=${ver + "-" + state.phase} tree=${tree} onSel=${setSel} sel=${sel} records=${state.records} isOpen=${isOpen} />`}
+      </div>
+      <div className="side">
+        <div className="card outlined"><div className="title-small" style=${{ marginBottom:8 }}>Evidence</div>
+          <${Detail} state=${state} selKey=${sel} /></div>
+        <div className="card outlined"><div className="title-small" style=${{ marginBottom:8 }}>Agent activity</div>
+          <${Activity} log=${state.log} running=${running} /></div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function App() {
-  const dark = useMediaQuery("(prefers-color-scheme: dark)");
-  const theme = useMemo(() => createTheme({ palette: { mode: dark ? "dark" : "light" } }), [dark]);
-  const [trail, setTrail] = useState(null);
-  const [sel, setSel] = useState(null);
-  const [err, setErr] = useState("");
+  const [state, dispatch] = useReducer(reduce, INIT);
+  const [q, setQ] = useState("");
+  const [source, setSource] = useState("synthetic");
+  const esRef = useRef(null);
 
+  // ?trail=annotated_baltic.json  -> open a saved, already-verified trail (no agent run, no credits)
   useEffect(() => {
-    fetch("annotated.json").then(r => r.ok ? r.json() : Promise.reject())
-      .then(setTrail).catch(() => setErr("No annotated.json found. Load one with the button."));
+    const f = new URLSearchParams(location.search).get("trail");
+    if (!f || !/^[\w.-]+\.json$/.test(f)) return;
+    fetch(f).then(r => r.json()).then(t => {
+      dispatch({ type:"reset", question:t.title || f, source:"synthetic" });
+      dispatch({ type:"done", trail:t });
+    }).catch(() => dispatch({ type:"error", message:"Could not load " + f }));
   }, []);
 
-  const claims = useMemo(() => trail ? [...trail.claims].sort((a, b) => ORDER[a.status] - ORDER[b.status]) : [], [trail]);
-  useEffect(() => { if (claims.length && !sel) setSel(claims[0].id); }, [claims]);
-
-  const load = e => {
-    const f = e.target.files[0]; if (!f) return;
-    f.text().then(t => { try { setTrail(JSON.parse(t)); setSel(null); setErr(""); } catch { setErr("Not valid JSON"); } });
+  const go = question => {
+    question = (question || "").trim(); if (!question) return;
+    if (esRef.current) esRef.current.close();
+    dispatch({ type:"reset", question, source });
+    const es = new EventSource(`/api/run?source=${source}&q=${encodeURIComponent(question)}`);
+    esRef.current = es;
+    es.onmessage = e => {
+      const ev = JSON.parse(e.data); dispatch(ev);
+      if (ev.type === "done" || ev.type === "error") es.close();
+    };
+    es.onerror = () => { es.close(); dispatch({ type:"error", message:"Connection to the server was lost." }); };
   };
-  const counts = claims.reduce((m, c) => (m[c.status] = (m[c.status] || 0) + 1, m), {});
-  const cur = claims.find(c => c.id === sel);
+  const stop = () => { if (esRef.current) { esRef.current.close(); esRef.current = null; } dispatch({ type:"stopped" }); };
+  const reset = () => { if (esRef.current) esRef.current.close(); location.reload(); };
 
-  return html`<${ThemeProvider} theme=${theme}><${CssBaseline} />
-    <${AppBar} position="static" color="default" elevation=${1}><${Toolbar} sx=${{ gap: 2, flexWrap: "wrap" }}>
-      <${Typography} variant="h6" fontWeight=${700}>csa_check<//>
-      <${Typography} variant="body2" color="text.secondary" sx=${{ flexGrow: 1 }}>${trail ? trail.title : err}<//>
-      ${trail && html`<${Stack} direction="row" spacing=${1}>
-        <${Chip} size="small" color="success" label=${(counts.solid || 0) + " solid"} />
-        <${Chip} size="small" color="warning" label=${(counts.shaky || 0) + " shaky"} />
-        <${Chip} size="small" color="error" label=${(counts.broken || 0) + " broken"} /><//>`}
-      <${Button} variant="outlined" component="label">Load trail
-        <input type="file" accept=".json" hidden onChange=${load} /><//>
-    <//><//>
-    ${trail && html`<${Box} sx=${{ display: "grid", gap: 2, p: 2, gridTemplateColumns: { xs: "1fr", md: "minmax(260px,360px) 1fr" } }}>
-      <${Stack} spacing=${1}>${claims.map(c => html`
-        <${Card} key=${c.id} variant="outlined" sx=${{ borderLeft: 5, borderLeftColor: COLOR[c.status] + ".main", outline: c.id === sel ? 2 : 0 }}>
-          <${CardActionArea} onClick=${() => setSel(c.id)}><${CardContent}>
-            <${Stack} direction="row" spacing=${1} alignItems="center">
-              <${Status} s=${c.status} />
-              ${c.overconfident && html`<${Chip} size="small" variant="outlined" color="error" label="overconfident" />`}
-            <//>
-            <${Typography} sx=${{ mt: 0.5 }}>${c.text}<//>
-            <${Typography} variant="caption" color="text.secondary">stated ${c.stated_confidence} · ${c.independent_sources} source(s)<//>
-          <//><//>
-        <//>`)}<//>
-      ${cur && html`<${Chain} claim=${cur} trail=${trail} />`}
-    <//>`}
-  <//>`;
+  return state.phase === "idle"
+    ? html`<${Landing} q=${q} setQ=${setQ} source=${source} setSource=${setSource} go=${go} />`
+    : html`<${RunView} state=${state} q=${q} setQ=${setQ} go=${go} reset=${reset} stop=${stop} />`;
 }
-
 ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
 </script>
 </body>

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>csa_check</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+<style> mark { background: #ffe66d; color: #000; padding: 0 2px; border-radius: 2px; } </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@mui/material@5.15.20/umd/material-ui.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const { useState, useEffect, useMemo } = React;
+const html = htm.bind(React.createElement);
+const { ThemeProvider, createTheme, CssBaseline, AppBar, Toolbar, Typography, Box, Card, CardActionArea,
+        CardContent, Chip, Alert, Button, Stack, Paper, Divider, useMediaQuery } = MaterialUI;
+
+const ORDER = { broken: 0, shaky: 1, solid: 2 };
+const COLOR = { solid: "success", pass: "success", shaky: "warning", weak: "warning",
+                broken: "error", fail: "error", assumed: "secondary" };
+
+const Status = ({ s }) => html`<${Chip} size="small" label=${s} color=${COLOR[s]} sx=${{ fontWeight: 700, textTransform: "uppercase" }} />`;
+
+function Quote({ rec, quote, ok }) {
+  const i = rec.text.toLowerCase().indexOf(quote.toLowerCase());
+  return html`<${Paper} variant="outlined" sx=${{ p: 1, my: 1, bgcolor: "action.hover" }}>
+    <${Typography} variant="caption" color="text.secondary">${rec.source}${rec.locator ? " · " + rec.locator : ""}<//>
+    <${Typography} variant="body2">${i >= 0
+      ? html`${rec.text.slice(0, i)}<mark>${rec.text.slice(i, i + quote.length)}</mark>${rec.text.slice(i + quote.length)}`
+      : rec.text}<//>
+    ${!ok && html`<${Alert} severity="error" sx=${{ mt: 1, py: 0 }}>Quoted text not found in record: “${quote}”<//>`}
+  <//>`;
+}
+
+function Step({ s, trail }) {
+  const bd = { pass: "success.main", weak: "warning.main", fail: "error.main", assumed: "secondary.main" }[s.status];
+  return html`<${Box} sx=${{ borderLeft: 4, borderColor: bd, borderStyle: s.status === "assumed" ? "dashed" : "solid", pl: 1.5, my: 1.5 }}>
+    <${Stack} direction="row" spacing=${1} alignItems="center" flexWrap="wrap">
+      <${Typography} variant="overline" color="text.secondary">${s.kind}<//>
+      <${Status} s=${s.status} />
+      <${Typography} variant="body2" fontWeight=${700}>${s.id}<//>
+    <//>
+    <${Typography} variant="body1">${s.text}<//>
+    ${s.problems.map((p, i) => html`<${Alert} key=${i} severity=${s.status === "fail" ? "error" : "warning"} sx=${{ mt: 0.5, py: 0 }}>${p}<//>`)}
+    ${(s.cite_checks || []).map((c, i) => trail.records[c.record] &&
+      html`<${Quote} key=${i} rec=${trail.records[c.record]} quote=${c.quote} ok=${c.ok} />`)}
+    ${(s.depends_on || []).length > 0 && html`<${Typography} variant="caption" color="text.secondary">builds on: ${s.depends_on.join(", ")}<//>`}
+  <//>`;
+}
+
+function Chain({ claim, trail }) {
+  const steps = claim.steps_in_chain.map(id => trail.steps.find(s => s.id === id));
+  return html`<${Card} variant="outlined"><${CardContent}>
+    <${Stack} direction="row" spacing=${1} alignItems="center"><${Status} s=${claim.status} />
+      <${Typography} variant="h6">${claim.id}<//><//>
+    <${Typography} variant="h6" fontWeight=${400}>${claim.text}<//>
+    <${Typography} variant="body2" color="text.secondary">Agent stated: ${claim.stated_confidence} · independent sources: ${claim.independent_sources}<//>
+    ${claim.reasons.map((r, i) => html`<${Alert} key=${i} severity=${claim.status === "broken" ? "error" : "warning"} sx=${{ mt: 1 }}>${r}<//>`)}
+    <${Divider} sx=${{ my: 2 }} />
+    <${Typography} variant="subtitle1" fontWeight=${500}>Reasoning chain<//>
+    ${steps.map(s => html`<${Step} key=${s.id} s=${s} trail=${trail} />`)}
+  <//><//>`;
+}
+
+function App() {
+  const dark = useMediaQuery("(prefers-color-scheme: dark)");
+  const theme = useMemo(() => createTheme({ palette: { mode: dark ? "dark" : "light" } }), [dark]);
+  const [trail, setTrail] = useState(null);
+  const [sel, setSel] = useState(null);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    fetch(new URLSearchParams(location.search).get("trail") || "annotated.json").then(r => r.ok ? r.json() : Promise.reject())
+      .then(setTrail).catch(() => setErr("No annotated.json found. Load one with the button."));
+  }, []);
+
+  const claims = useMemo(() => trail ? [...trail.claims].sort((a, b) => ORDER[a.status] - ORDER[b.status]) : [], [trail]);
+  useEffect(() => { if (claims.length && !sel) setSel(claims[0].id); }, [claims]);
+
+  const load = e => {
+    const f = e.target.files[0]; if (!f) return;
+    f.text().then(t => { try { setTrail(JSON.parse(t)); setSel(null); setErr(""); } catch { setErr("Not valid JSON"); } });
+  };
+  const counts = claims.reduce((m, c) => (m[c.status] = (m[c.status] || 0) + 1, m), {});
+  const cur = claims.find(c => c.id === sel);
+
+  return html`<${ThemeProvider} theme=${theme}><${CssBaseline} />
+    <${AppBar} position="static" color="default" elevation=${1}><${Toolbar} sx=${{ gap: 2, flexWrap: "wrap" }}>
+      <${Typography} variant="h6" fontWeight=${700}>csa_check<//>
+      <${Typography} variant="body2" color="text.secondary" sx=${{ flexGrow: 1 }}>${trail ? trail.title : err}<//>
+      ${trail && html`<${Stack} direction="row" spacing=${1}>
+        <${Chip} size="small" color="success" label=${(counts.solid || 0) + " solid"} />
+        <${Chip} size="small" color="warning" label=${(counts.shaky || 0) + " shaky"} />
+        <${Chip} size="small" color="error" label=${(counts.broken || 0) + " broken"} /><//>`}
+      <${Button} variant="outlined" component="label">Load trail
+        <input type="file" accept=".json" hidden onChange=${load} /><//>
+    <//><//>
+    ${trail && html`<${Box} sx=${{ display: "grid", gap: 2, p: 2, gridTemplateColumns: { xs: "1fr", md: "minmax(260px,360px) 1fr" } }}>
+      <${Stack} spacing=${1}>${claims.map(c => html`
+        <${Card} key=${c.id} variant="outlined" sx=${{ borderLeft: 5, borderLeftColor: COLOR[c.status] + ".main", outline: c.id === sel ? 2 : 0 }}>
+          <${CardActionArea} onClick=${() => setSel(c.id)}><${CardContent}>
+            <${Stack} direction="row" spacing=${1} alignItems="center">
+              <${Status} s=${c.status} />
+              ${c.overconfident && html`<${Chip} size="small" variant="outlined" color="error" label="overconfident" />`}
+            <//>
+            <${Typography} sx=${{ mt: 0.5 }}>${c.text}<//>
+            <${Typography} variant="caption" color="text.secondary">stated ${c.stated_confidence} · ${c.independent_sources} source(s)<//>
+          <//><//>
+        <//>`)}<//>
+      ${cur && html`<${Chain} claim=${cur} trail=${trail} />`}
+    <//>`}
+  <//>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

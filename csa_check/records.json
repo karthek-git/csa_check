@@ -1,0 +1,9 @@
+{
+  "r1": {
+    "source": "maltego:To Website [Quick lookup]",
+    "locator": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a#716fdd432dc5",
+    "run_id": "bb7c7572-b1ef-424b-b75f-30e4ba1e416a",
+    "text": "Maltego result of [To Website [Quick lookup]] on maltego.Domain maltego.com: maltego.Website www.maltego.com (fqdn=\"www.maltego.com\", ports=[80])",
+    "hash": "sha256:625ca32196023bb3c06c946b7385685df67745d8d6fbc1f2f8c4c11c2f442ca6"
+  }
+}
