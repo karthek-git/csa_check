@@ -1,0 +1,24 @@
+{
+  "title": "Possible influence operation around news-voice.example (planted-flaw demo)",
+  "records": {
+    "r1": {"source": "whois", "text": "Domain news-voice.example registered 2026-09-02 via registrar NameCo. Registrant privacy enabled."},
+    "r2": {"source": "telegram", "text": "Channel @newsvoice posted 14 comments between 03:00 and 03:04 UTC on 2026-09-11, all containing the link news-voice.example/a1."},
+    "r3": {"source": "telegram", "text": "Accounts u771, u772 and u773 each replied under three channels within one minute of each other, using identical wording."},
+    "r4": {"source": "urlscan", "text": "news-voice.example/a1 redirects to a page that republishes material from a known state outlet."}
+  },
+  "steps": [
+    {"id": "s1", "kind": "observation", "text": "The domain was registered 9 days before the posting burst", "cites": [{"record": "r1", "quote": "registered 2026-09-02"}, {"record": "r2", "quote": "2026-09-11"}]},
+    {"id": "s2", "kind": "observation", "text": "Three accounts posted identical wording within a minute across three channels", "cites": [{"record": "r3", "quote": "identical wording"}]},
+    {"id": "s3", "kind": "observation", "text": "The linked page republishes state-outlet material", "cites": [{"record": "r4", "quote": "republishes material from a known state outlet"}]},
+    {"id": "s4", "kind": "inference", "text": "The accounts are coordinated", "depends_on": ["s2"], "cites": [{"record": "r3", "quote": "within one minute of each other"}]},
+    {"id": "s5", "kind": "inference", "text": "The domain was created for this campaign", "depends_on": ["s1"]},
+    {"id": "s6", "kind": "assumption", "text": "Coordinated sharing of a state-linked site means Kremlin direction"},
+    {"id": "s7", "kind": "observation", "text": "The operator confessed in a leaked chat", "cites": [{"record": "r2", "quote": "we are paid by the ministry"}]}
+  ],
+  "claims": [
+    {"id": "c1", "text": "A coordinated account group is amplifying news-voice.example", "stated_confidence": "high", "supported_by": ["s4", "s2", "s3"]},
+    {"id": "c2", "text": "The domain was purpose-built for the campaign", "stated_confidence": "high", "supported_by": ["s5"]},
+    {"id": "c3", "text": "The operation is directed by the Kremlin", "stated_confidence": "high", "supported_by": ["s4", "s3", "s6"]},
+    {"id": "c4", "text": "An operator admitted payment by a ministry", "stated_confidence": "medium", "supported_by": ["s7"]}
+  ]
+}
